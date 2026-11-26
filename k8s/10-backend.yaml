@@ -19,13 +19,13 @@ spec:
       containers:
         - name: backend
           # 아래 image 줄은 GitHub Actions가 push마다 커밋 SHA 태그로 바꾼다
-          image: DOCKERHUB_USERNAME/board-backend:latest
+          image: 110901d/board-backend:270f5db
           ports:
             - name: http
               containerPort: 8080
           env:
             - name: APP_VERSION   # /actuator/info 에서 어떤 버전이 떠 있는지 확인용 (CI가 갱신)
-              value: "init"  # APP_VERSION
+              value: "270f5db"  # APP_VERSION
             - name: JAVA_OPTS
               value: "-XX:MaxRAMPercentage=75.0"
           envFrom:
