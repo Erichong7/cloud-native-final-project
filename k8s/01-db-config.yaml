@@ -1,0 +1,23 @@
+# DB 접속 정보
+# - ConfigMap: 민감하지 않은 값
+# - Secret   : 계정/비밀번호
+#   (stringData로 쓰면 K8s가 base64로 저장한다. Git에 평문으로 올라가므로 보고서 제한사항에 기재)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: board-db-config
+  namespace: board
+data:
+  DB_HOST: postgres          # 아래 02-postgres-external.yaml 의 Service 이름 (클러스터 DNS)
+  DB_PORT: "5432"
+  DB_NAME: postgres
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: board-db-secret
+  namespace: board
+type: Opaque
+stringData:
+  DB_USER: postgres
+  DB_PASSWORD: mysecretpassword

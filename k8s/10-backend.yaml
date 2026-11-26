@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: board
+  labels:
+    app: backend
+spec:
+  replicas: 1                  # VM 메모리가 넉넉하면 2로 늘려서 시연 (kubectl scale 또는 이 값 수정)
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: backend
+          # 아래 image 줄은 GitHub Actions가 push마다 커밋 SHA 태그로 바꾼다
+          image: DOCKERHUB_USERNAME/board-backend:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: APP_VERSION   # /actuator/info 에서 어떤 버전이 떠 있는지 확인용 (CI가 갱신)
+              value: "init"  # APP_VERSION
+            - name: JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=75.0"
+          envFrom:
+            - configMapRef:
+                name: board-db-config
+            - secretRef:
+                name: board-db-secret
+          # Spring Boot는 뜨는 데 20~60초 걸릴 수 있어서, 다 뜰 때까지는 liveness 검사를 미룬다
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 5
+            failureThreshold: 36     # 최대 3분 대기
+          readinessProbe:            # DB 연결까지 되어야 트래픽을 받음
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 10
+          livenessProbe:             # 앱이 멈추면 재시작
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: "1"
+              memory: 640Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: board
+  labels:
+    app: backend            # ServiceMonitor가 이 라벨로 찾는다
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - name: http            # ServiceMonitor가 이 포트 이름으로 수집한다
+      port: 8080
+      targetPort: http

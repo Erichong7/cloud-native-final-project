@@ -1,0 +1,28 @@
+# 노드(myserver01, 10.0.2.3)에 직접 설치한 PostgreSQL을 클러스터 안에서
+# "postgres"라는 Service 이름으로 부르기 위한 설정.
+#
+# selector가 없는 Service + 직접 작성한 Endpoints 조합이다.
+# 백엔드는 IP 대신 postgres:5432 로 접속하므로, DB 위치가 바뀌어도
+# 이 파일의 IP만 고치면 된다.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: board
+spec:
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: postgres          # Service 이름과 같아야 연결된다
+  namespace: board
+subsets:
+  - addresses:
+      - ip: 10.0.2.3      # PostgreSQL이 설치된 노드 IP (본인 환경에 맞게)
+    ports:
+      - name: postgres
+        port: 5432

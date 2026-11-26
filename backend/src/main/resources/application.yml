@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  shutdown: graceful            # 파드 종료 시 처리 중인 요청을 마치고 내려감
+
+spring:
+  application:
+    name: board-backend
+  datasource:
+    # 값은 K8s ConfigMap/Secret에서 환경변수로 주입 (k8s/01-db-config.yaml)
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 3000
+  jpa:
+    hibernate:
+      ddl-auto: update          # posts 테이블이 없으면 자동 생성
+    open-in-view: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE   # created_at 같은 snake_case로 응답 (프론트와 맞춤)
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true           # /actuator/health/liveness, /actuator/health/readiness
+      group:
+        readiness:
+          include: readinessState, db   # DB 연결까지 되어야 Ready
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: board-backend
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true      # Grafana에서 응답시간 p95 계산용
+
+info:
+  app:
+    version: ${APP_VERSION:dev}

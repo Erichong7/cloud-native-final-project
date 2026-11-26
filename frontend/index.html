@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>명지대 게시판</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <span class="logo" aria-hidden="true">M</span>
+        <span class="brand-text">
+          <small>클라우드 네이티브</small>
+          <strong>명지대 게시판</strong>
+        </span>
+      </a>
+      <nav class="tabs">
+        <a class="active" href="/">게시판</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- 왼쪽: 프로필 카드 + 게시판 목록 -->
+    <aside class="left">
+      <div class="card profile">
+        <div class="avatar" aria-hidden="true"></div>
+        <p class="nickname">익명</p>
+        <p class="school">명지대 · 클라우드 네이티브</p>
+      </div>
+      <div class="card menu">
+        <a class="menu-item active" href="/">📋 자유게시판</a>
+      </div>
+    </aside>
+
+    <!-- 가운데: 게시판 -->
+    <main class="center">
+      <div class="board-title">
+        <h1>자유게시판</h1>
+        <button type="button" id="refresh-btn" class="icon-btn" title="새로고침">↻</button>
+      </div>
+
+      <!-- 접혀 있다가 누르면 펼쳐지는 글쓰기 박스 -->
+      <section class="card write" id="write-box">
+        <button type="button" class="write-placeholder" id="open-write">새 글을 작성해주세요!</button>
+        <form id="post-form" hidden>
+          <input type="hidden" id="post-id" />
+          <input id="title" class="title-input" placeholder="글 제목" maxlength="200" required />
+          <textarea id="content" placeholder="자유롭게 이야기해 보세요. 욕설·비방은 삼가주세요." rows="6" required></textarea>
+          <div class="write-footer">
+            <input id="author" class="author-input" placeholder="닉네임" maxlength="50" />
+            <label class="anon"><input type="checkbox" id="anonymous" checked /> 익명</label>
+            <span class="spacer"></span>
+            <button type="button" id="cancel-btn" class="text-btn">취소</button>
+            <button type="submit" id="submit-btn" class="submit-btn" title="등록">✓</button>
+          </div>
+        </form>
+      </section>
+
+      <p id="message" role="status"></p>
+
+      <!-- 글 상세 보기 (목록에서 글을 누르면 표시) -->
+      <article class="card detail" id="detail" hidden>
+        <div class="detail-head">
+          <div class="avatar small" aria-hidden="true"></div>
+          <div>
+            <strong id="detail-author"></strong>
+            <time id="detail-time"></time>
+          </div>
+          <span class="spacer"></span>
+          <button type="button" class="text-btn" id="edit-btn">수정</button>
+          <button type="button" class="text-btn danger" id="delete-btn">삭제</button>
+        </div>
+        <h2 id="detail-title"></h2>
+        <p id="detail-content"></p>
+        <button type="button" class="back-btn" id="back-btn">← 목록으로</button>
+      </article>
+
+      <section class="card list" id="list-box">
+        <ul id="post-list"></ul>
+      </section>
+    </main>
+
+    <!-- 오른쪽: 최신 글 -->
+    <aside class="right">
+      <div class="card side-box">
+        <h3>최신 글 <span class="hot">NEW</span></h3>
+        <ul id="recent-list"></ul>
+      </div>
+      <div class="card side-box">
+        <h3>게시판 현황</h3>
+        <p class="stat"><span>전체 글</span><strong id="post-count">0</strong></p>
+      </div>
+    </aside>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

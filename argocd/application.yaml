@@ -1,0 +1,23 @@
+# 11주차처럼 ArgoCD UI(NEW APP)로 만들어도 되고, 이 파일로 만들어도 된다.
+#   kubectl apply -f argocd/application.yaml
+# 레포: https://github.com/Erichong7/cloud-native-final-project
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: board
+  namespace: myargocd       # ArgoCD가 설치된 네임스페이스 (수업 실습: myargocd)
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Erichong7/cloud-native-final-project.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: board
+  syncPolicy:
+    automated:          # 수업 실습(Manual)과 달리 Git이 바뀌면 자동 배포
+      prune: true       # Git에서 지운 리소스는 클러스터에서도 삭제
+      selfHeal: true    # 클러스터에서 손으로 바꾼 값은 Git 상태로 되돌림
+    syncOptions:
+      - CreateNamespace=true
