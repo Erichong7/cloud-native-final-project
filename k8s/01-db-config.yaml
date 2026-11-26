@@ -8,7 +8,7 @@ metadata:
   name: board-db-config
   namespace: board
 data:
-  DB_HOST: postgres          # 아래 02-postgres-external.yaml 의 Service 이름 (클러스터 DNS)
+  DB_HOST: "10.0.2.3"       # PostgreSQL이 설치된 노드(myserver01) IP
   DB_PORT: "5432"
   DB_NAME: postgres
 ---

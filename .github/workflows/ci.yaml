@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
@@ -44,6 +44,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./backend
+          platforms: linux/arm64
           push: true
           cache-from: type=gha,scope=backend     # Gradle 의존성 레이어 재사용 → 두 번째 빌드부터 빨라짐
           cache-to: type=gha,scope=backend,mode=max
@@ -55,6 +56,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
+          platforms: linux/arm64
           push: true
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,scope=frontend,mode=max
