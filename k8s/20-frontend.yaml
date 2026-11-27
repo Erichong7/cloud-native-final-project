@@ -18,7 +18,7 @@ spec:
       containers:
         - name: frontend
           # 아래 image 줄은 GitHub Actions가 push마다 커밋 SHA 태그로 바꾼다
-          image: 110901d/board-frontend:15b93a1
+          image: 110901d/board-frontend:af7e265
           ports:
             - name: http
               containerPort: 80
